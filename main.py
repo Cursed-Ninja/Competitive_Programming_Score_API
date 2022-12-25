@@ -8,6 +8,7 @@ from send_mail import Mail
 app = Flask(__name__)
 CORS(app)
 api = Api(app)
+@app.route('/')
 
 
 class Details(Resource):
