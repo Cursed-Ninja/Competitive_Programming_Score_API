@@ -42,7 +42,8 @@ class UserData:
             rating = soup.find('div', class_='rating-number').text
         except AttributeError:
             raise UsernameError('User not Found')
-
+        
+        rating = rating.split("?")[0]
         stars = soup.find('span', class_='rating')
         if stars:
             stars = stars.text
