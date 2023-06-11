@@ -480,9 +480,11 @@ class UserData:
             global_ranking = user_contest_ranking['globalRanking']
             total_participants = user_contest_ranking['totalParticipants']
             top_percentage = user_contest_ranking['topPercentage']
-            maxRating = max(user_rating_history, key=lambda x: x['rating'])
             contest_badge = get_safe_nested_key(
                 ['data', 'matchedUser', 'contestBadge', 'name'], response)
+            maxRating = user_rating_history[0]['rating']
+            for i in range(1, len(user_rating_history)):
+                maxRating = max(maxRating, user_rating_history[i]['rating'])
 
             return {
                 'status': 'Success',
@@ -495,7 +497,7 @@ class UserData:
                 'global_ranking': str(global_ranking),
                 'total_participants': str(total_participants),
                 'top_percentage': str(top_percentage),
-                'max_rating': str(round(maxRating['rating'])),
+                'max_rating': str(round(maxRating)),
                 'contest_badge': contest_badge
             }
 
