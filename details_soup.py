@@ -42,14 +42,15 @@ class UserData:
             rating = soup.find('div', class_='rating-number').text
         except AttributeError:
             raise UsernameError('User not Found')
-        
+
         rating = rating.split("?")[0]
         stars = soup.find('span', class_='rating')
         if stars:
             stars = stars.text
 
         highest_rating_container = soup.find('div', class_='rating-header')
-        highest_rating = highest_rating_container.find_next('small').text.split()[-1].rstrip(')')
+        highest_rating = highest_rating_container.find_next(
+            'small').text.split()[-1].rstrip(')')
 
         rating_ranks_container = soup.find('div', class_='rating-ranks')
         rating_ranks = rating_ranks_container.find_all('a')
@@ -109,7 +110,8 @@ class UserData:
             next_opening_brack = page.text.find('[', start_ind + 1)
             while next_opening_brack < end_ind:
                 end_ind = page.text.find(']', end_ind + 1) + 1
-                next_opening_brack = page.text.find('[', next_opening_brack + 1)
+                next_opening_brack = page.text.find(
+                    '[', next_opening_brack + 1)
 
             all_rating = json.loads(page.text[start_ind: end_ind])
             for rating_contest in all_rating:
@@ -118,13 +120,15 @@ class UserData:
             return all_rating
 
         def problems_solved_get():
-            problem_solved_section = soup.find('section', class_='rating-data-section problems-solved')
+            problem_solved_section = soup.find(
+                'section', class_='rating-data-section problems-solved')
 
             no_solved = problem_solved_section.find_all('h5')
 
             categories = problem_solved_section.find_all('article')
 
-            fully_solved = {'count': int(re.findall(r'\d+', no_solved[0].text)[0])}
+            fully_solved = {'count': int(
+                re.findall(r'\d+', no_solved[0].text)[0])}
 
             if fully_solved['count'] != 0:
                 for category in categories[0].find_all('p'):
@@ -135,7 +139,8 @@ class UserData:
                         fully_solved[category_name].append({'name': prob.text,
                                                             'link': 'https://www.codechef.com' + prob['href']})
 
-            partially_solved = {'count': int(re.findall(r'\d+', no_solved[1].text)[0])}
+            partially_solved = {'count': int(
+                re.findall(r'\d+', no_solved[1].text)[0])}
             if partially_solved['count'] != 0:
                 for category in categories[1].find_all('p'):
                     category_name = category.find('strong').text[:-1]
@@ -148,7 +153,8 @@ class UserData:
             return fully_solved, partially_solved
 
         def user_details_get():
-            user_details_attribute_exclusion_list = {'username', 'link', 'teams list', 'discuss profile'}
+            user_details_attribute_exclusion_list = {
+                'username', 'link', 'teams list', 'discuss profile'}
 
             header_containers = soup.find_all('header')
             name = header_containers[1].find('h1', class_="h2-style").text
@@ -156,7 +162,8 @@ class UserData:
             user_details_section = soup.find('section', class_='user-details')
             user_details_list = user_details_section.find_all('li')
 
-            user_details_response = {'name': name, 'username': user_details_list[0].text.split('★')[-1].rstrip('\n')}
+            user_details_response = {
+                'name': name, 'username': user_details_list[0].text.split('★')[-1].rstrip('\n')}
             for user_details in user_details_list:
                 attribute, value = user_details.text.split(':')[:2]
                 attribute = attribute.strip().lower()
@@ -181,7 +188,8 @@ class UserData:
             "user_contests": {"url": f'https://codeforces.com/contests/with/{self.__username}'}
         }
 
-        reqs = [grequests.get(item["url"]) for item in urls.values() if item.get("url")]
+        reqs = [grequests.get(item["url"])
+                for item in urls.values() if item.get("url")]
 
         responses = grequests.map(reqs)
 
@@ -194,7 +202,8 @@ class UserData:
                 details_api = page.json()
             elif page.request.url == urls["user_contests"]["url"]:
                 soup = BeautifulSoup(page.text, 'html.parser')
-                table = soup.find('table', attrs={'class': 'user-contests-table'})
+                table = soup.find(
+                    'table', attrs={'class': 'user-contests-table'})
                 table_body = table.find('tbody')
 
                 rows = table_body.find_all('tr')
@@ -247,7 +256,8 @@ class UserData:
 
         points = details_container[2].text.split()[3][1:]
         rank = details_container[2].text.split()[2][1:]
-        join_date = details_container[1].text.split()[1] + ' ' + details_container[1].text.split()[2]
+        join_date = details_container[1].text.split(
+        )[1] + ' ' + details_container[1].text.split()[2]
         institute = ' '.join(details_container[3].text.split()[1:])
 
         try:
@@ -364,7 +374,8 @@ class UserData:
 
         # driver = webdriver.PhantomJS(executable_path='./phantomjs')
 
-        driver = webdriver.Chrome(options=options, executable_path=os.environ.get("CHROMEDRIVER_PATH"))
+        driver = webdriver.Chrome(
+            options=options, executable_path=os.environ.get("CHROMEDRIVER_PATH"))
         try:
             driver.get(url)
 
@@ -372,9 +383,11 @@ class UserData:
 
             hover_ranking = driver.find_element_by_xpath(
                 '/html/body/div[1]/div[2]/div/div[1]/div[1]/div[2]/div/div[1]/div[3]/div')
-            ActionChains(driver).move_to_element(to_element=hover_ranking).perform()
+            ActionChains(driver).move_to_element(
+                to_element=hover_ranking).perform()
 
-            ranking = driver.find_element_by_xpath('/html/body/div[4]/div/div/div/div[2]').text
+            ranking = driver.find_element_by_xpath(
+                '/html/body/div[4]/div/div/div/div[2]').text
             print('rank: ', ranking)
 
             total_problems_solved = driver.find_element_by_xpath(
@@ -384,7 +397,8 @@ class UserData:
                 '/html/body/div[1]/div[2]/div/div[1]/div[2]/div/div[1]/div[2]/div[2]/div/div[1]/span[1]').text
             acceptance_rate_span_2 = driver.find_element_by_xpath(
                 '/html/body/div[1]/div[2]/div/div[1]/div[2]/div/div[1]/div[2]/div[2]/div/div[1]/span[2]').text
-            acceptance_rate = str(acceptance_rate_span_1) + str(acceptance_rate_span_2)
+            acceptance_rate = str(acceptance_rate_span_1) + \
+                str(acceptance_rate_span_2)
 
             easy_questions_solved = driver.find_element_by_xpath(
                 '//*[@id="profile-root"]/div[2]/div/div[1]/div[2]/div/div[2]/div/div[1]/div[2]/span[1]').text
@@ -435,119 +449,51 @@ class UserData:
     def __leetcode_v2(self):
 
         def __parse_response(response):
-            total_submissions_count = 0
-            total_easy_submissions_count = 0
-            total_medium_submissions_count = 0
-            total_hard_submissions_count = 0
-
-            ac_submissions_count = 0
-            ac_easy_submissions_count = 0
-            ac_medium_submissions_count = 0
-            ac_hard_submissions_count = 0
-
-            total_easy_questions = 0
-            total_medium_questions = 0
-            total_hard_questions = 0
-
             total_problems_solved = 0
             easy_questions_solved = 0
             medium_questions_solved = 0
             hard_questions_solved = 0
 
-            acceptance_rate = 0
-            easy_acceptance_rate = 0
-            medium_acceptance_rate = 0
-            hard_acceptance_rate = 0
-
-            total_problems_submitted = 0
-            easy_problems_submitted = 0
-            medium_problems_submitted = 0
-            hard_problems_submitted = 0
-
-            ranking = get_safe_nested_key(['data', 'matchedUser', 'profile', 'ranking'], response)
+            ranking = get_safe_nested_key(
+                ['data', 'matchedUser', 'profile', 'ranking'], response)
             if ranking > 100000:
                 ranking = '~100000'
 
-            reputation = get_safe_nested_key(['data', 'matchedUser', 'profile', 'reputation'], response)
-
-            total_questions_stats = get_safe_nested_key(['data', 'allQuestionsCount'], response)
-            for item in total_questions_stats:
-                if item['difficulty'] == "Easy":
-                    total_easy_questions = item['count']
-                if item['difficulty'] == "Medium":
-                    total_medium_questions = item['count']
-                if item['difficulty'] == "Hard":
-                    total_hard_questions = item['count']
-
-            ac_submissions = get_safe_nested_key(['data', 'matchedUser', 'submitStats', 'acSubmissionNum'], response)
+            ac_submissions = get_safe_nested_key(
+                ['data', 'matchedUser', 'submitStats', 'acSubmissionNum'], response)
             for submission in ac_submissions:
                 if submission['difficulty'] == "All":
                     total_problems_solved = submission['count']
-                    ac_submissions_count = submission['submissions']
                 if submission['difficulty'] == "Easy":
                     easy_questions_solved = submission['count']
-                    ac_easy_submissions_count = submission['submissions']
                 if submission['difficulty'] == "Medium":
                     medium_questions_solved = submission['count']
-                    ac_medium_submissions_count = submission['submissions']
                 if submission['difficulty'] == "Hard":
                     hard_questions_solved = submission['count']
-                    ac_hard_submissions_count = submission['submissions']
 
-            total_submissions = get_safe_nested_key(['data', 'matchedUser', 'submitStats', 'totalSubmissionNum'],
-                                                    response)
-            for submission in total_submissions:
-                if submission['difficulty'] == "All":
-                    total_problems_submitted = submission['count']
-                    total_submissions_count = submission['submissions']
-                if submission['difficulty'] == "Easy":
-                    easy_problems_submitted = submission['count']
-                    total_easy_submissions_count = submission['submissions']
-                if submission['difficulty'] == "Medium":
-                    medium_problems_submitted = submission['count']
-                    total_medium_submissions_count = submission['submissions']
-                if submission['difficulty'] == "Hard":
-                    hard_problems_submitted = submission['count']
-                    total_hard_submissions_count = submission['submissions']
+            user_contest_ranking = get_safe_nested_key(
+                ['data', 'userContestRanking'], response)
+            user_rating_history = get_safe_nested_key(
+                ['data', 'userContestRankingHistory'], response)
 
-            if total_submissions_count > 0:
-                acceptance_rate = round(ac_submissions_count * 100 / total_submissions_count, 2)
-            if total_easy_submissions_count > 0:
-                easy_acceptance_rate = round(ac_easy_submissions_count * 100 / total_easy_submissions_count, 2)
-            if total_medium_submissions_count > 0:
-                medium_acceptance_rate = round(ac_medium_submissions_count * 100 / total_medium_submissions_count, 2)
-            if total_hard_submissions_count > 0:
-                hard_acceptance_rate = round(ac_hard_submissions_count * 100 / total_hard_submissions_count, 2)
-
-            contribution_points = get_safe_nested_key(['data', 'matchedUser', 'contributions', 'points'],
-                                                      response)
-            contribution_problems = get_safe_nested_key(['data', 'matchedUser', 'contributions', 'questionCount'],
-                                                        response)
-            contribution_testcases = get_safe_nested_key(['data', 'matchedUser', 'contributions', 'testcaseCount'],
-                                                         response)
+            rating = round(user_contest_ranking['rating'])
+            global_ranking = user_contest_ranking['globalRanking']
+            total_participants = user_contest_ranking['totalParticipants']
+            top_percentage = user_contest_ranking['topPercentage']
+            maxRating = max(user_rating_history, key=lambda x: x['rating'])
 
             return {
                 'status': 'Success',
                 'ranking': str(ranking),
-                'total_problems_submitted': str(total_problems_submitted),
                 'total_problems_solved': str(total_problems_solved),
-                'acceptance_rate': f"{acceptance_rate}%",
-                'easy_problems_submitted': str(easy_problems_submitted),
                 'easy_questions_solved': str(easy_questions_solved),
-                'easy_acceptance_rate': f"{easy_acceptance_rate}%",
-                'total_easy_questions': str(total_easy_questions),
-                'medium_problems_submitted': str(medium_problems_submitted),
                 'medium_questions_solved': str(medium_questions_solved),
-                'medium_acceptance_rate': f"{medium_acceptance_rate}%",
-                'total_medium_questions': str(total_medium_questions),
-                'hard_problems_submitted': str(hard_problems_submitted),
                 'hard_questions_solved': str(hard_questions_solved),
-                'hard_acceptance_rate': f"{hard_acceptance_rate}%",
-                'total_hard_questions': str(total_hard_questions),
-                'contribution_points': str(contribution_points),
-                'contribution_problems': str(contribution_problems),
-                'contribution_testcases': str(contribution_testcases),
-                'reputation': str(reputation)
+                'rating': str(rating),
+                'global_ranking': str(global_ranking),
+                'total_participants': str(total_participants),
+                'top_percentage': str(top_percentage),
+                'max_rating': str(round(maxRating['rating']))
             }
 
         url = f'https://leetcode.com/{self.__username}'
@@ -558,7 +504,33 @@ class UserData:
             "variables": {
                 "username": self.__username
             },
-            "query": "query getUserProfile($username: String!) {  allQuestionsCount {    difficulty    count  }  matchedUser(username: $username) {    contributions {    points      questionCount      testcaseCount    }    profile {    reputation      ranking    }    submitStats {      acSubmissionNum {        difficulty        count        submissions      }      totalSubmissionNum {        difficulty        count        submissions      }    }  }}"
+            "query": '''query getUserProfile($username: String!) {
+                        matchedUser(username: $username) {
+                            contestBadge {
+                            name
+                            }
+                            profile {
+                            ranking
+                            }
+                            submitStats {
+                            acSubmissionNum {
+                                difficulty
+                                count
+                                submissions
+                            }
+                            }
+                        }
+                        userContestRanking(username: $username) {
+                            rating
+                            globalRanking
+                            totalParticipants
+                            topPercentage  
+                        }
+                        userContestRankingHistory(username: $username) {
+                                rating
+                        }
+                    }
+                    '''
         }
         res = requests.post(url='https://leetcode.com/graphql',
                             json=payload,
