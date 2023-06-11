@@ -481,6 +481,8 @@ class UserData:
             total_participants = user_contest_ranking['totalParticipants']
             top_percentage = user_contest_ranking['topPercentage']
             maxRating = max(user_rating_history, key=lambda x: x['rating'])
+            contest_badge = get_safe_nested_key(
+                ['data', 'matchedUser', 'contestBadge', 'name'], response)
 
             return {
                 'status': 'Success',
@@ -493,7 +495,8 @@ class UserData:
                 'global_ranking': str(global_ranking),
                 'total_participants': str(total_participants),
                 'top_percentage': str(top_percentage),
-                'max_rating': str(round(maxRating['rating']))
+                'max_rating': str(round(maxRating['rating'])),
+                'contest_badge': contest_badge
             }
 
         url = f'https://leetcode.com/{self.__username}'
@@ -507,17 +510,17 @@ class UserData:
             "query": '''query getUserProfile($username: String!) {
                         matchedUser(username: $username) {
                             contestBadge {
-                            name
+                                name
                             }
                             profile {
-                            ranking
+                                ranking
                             }
                             submitStats {
-                            acSubmissionNum {
-                                difficulty
-                                count
-                                submissions
-                            }
+                                acSubmissionNum {
+                                    difficulty
+                                    count
+                                    submissions
+                                }
                             }
                         }
                         userContestRanking(username: $username) {
