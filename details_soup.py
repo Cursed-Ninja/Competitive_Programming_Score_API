@@ -119,38 +119,38 @@ class UserData:
 
             return all_rating
 
-        def problems_solved_get():
-            problem_solved_section = soup.find(
-                'section', class_='rating-data-section problems-solved')
+        # def problems_solved_get():
+        #     problem_solved_section = soup.find(
+        #         'section', class_='rating-data-section problems-solved')
 
-            no_solved = problem_solved_section.find_all('h5')
+        #     no_solved = problem_solved_section.find_all('h5')
 
-            categories = problem_solved_section.find_all('article')
+        #     categories = problem_solved_section.find_all('article')
+        #     print(no_solved)
+        #     fully_solved = {'count': int(
+        #         re.findall(r'\d+', no_solved[0].text)[0])}
 
-            fully_solved = {'count': int(
-                re.findall(r'\d+', no_solved[0].text)[0])}
+        #     if fully_solved['count'] != 0:
+        #         for category in categories[0].find_all('p'):
+        #             category_name = category.find('strong').text[:-1]
+        #             fully_solved[category_name] = []
 
-            if fully_solved['count'] != 0:
-                for category in categories[0].find_all('p'):
-                    category_name = category.find('strong').text[:-1]
-                    fully_solved[category_name] = []
+        #             for prob in category.find_all('a'):
+        #                 fully_solved[category_name].append({'name': prob.text,
+        #                                                     'link': 'https://www.codechef.com' + prob['href']})
 
-                    for prob in category.find_all('a'):
-                        fully_solved[category_name].append({'name': prob.text,
-                                                            'link': 'https://www.codechef.com' + prob['href']})
+        #     partially_solved = {'count': int(
+        #         re.findall(r'\d+', no_solved[1].text)[0])}
+        #     if partially_solved['count'] != 0:
+        #         for category in categories[1].find_all('p'):
+        #             category_name = category.find('strong').text[:-1]
+        #             partially_solved[category_name] = []
 
-            partially_solved = {'count': int(
-                re.findall(r'\d+', no_solved[1].text)[0])}
-            if partially_solved['count'] != 0:
-                for category in categories[1].find_all('p'):
-                    category_name = category.find('strong').text[:-1]
-                    partially_solved[category_name] = []
+        #             for prob in category.find_all('a'):
+        #                 partially_solved[category_name].append({'name': prob.text,
+        #                                                         'link': 'https://www.codechef.com' + prob['href']})
 
-                    for prob in category.find_all('a'):
-                        partially_solved[category_name].append({'name': prob.text,
-                                                                'link': 'https://www.codechef.com' + prob['href']})
-
-            return fully_solved, partially_solved
+        #     return fully_solved, partially_solved
 
         def user_details_get():
             user_details_attribute_exclusion_list = {
@@ -174,11 +174,11 @@ class UserData:
 
             return user_details_response
 
-        full, partial = problems_solved_get()
+        # full, partial = problems_solved_get()
         details = {'status': 'Success', 'rating': int(rating), 'stars': stars, 'highest_rating': int(highest_rating),
                    'global_rank': global_rank, 'country_rank': country_rank,
                    'user_details': user_details_get(), 'contests': contests_details_get(),
-                   'contest_ratings': contest_rating_details_get(), 'fully_solved': full, 'partially_solved': partial}
+                   'contest_ratings': contest_rating_details_get()}
 
         return details
 
