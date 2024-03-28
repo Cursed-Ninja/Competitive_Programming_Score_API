@@ -8,9 +8,9 @@ from send_mail import Mail
 app = Flask(__name__)
 CORS(app)
 api = Api(app)
-@app.route('/')
 
 
+@app.route("/")
 class Details(Resource):
     def get(self, platform, username):
 
@@ -20,22 +20,24 @@ class Details(Resource):
             return user_data.get_details(platform)
 
         except UsernameError:
-            return {'status': 'Failed', 'details': 'Invalid username'}
+            return {"status": "Failed", "details": "Invalid username"}
 
         except PlatformError:
-            return {'status': 'Failed', 'details': 'Invalid Platform'}
-        
+            return {"status": "Failed", "details": "Invalid Platform"}
+
         except BrokenChangesError:
-            return {'status': 'Failed', 'details': 'API broken due to site changes'}
+            return {"status": "Failed", "details": "API broken due to site changes"}
+        except:
+            return {"status": "Failed", "details": "Unknown error"}
 
 
-api.add_resource(Details,'/api/<string:platform>/<string:username>')
+api.add_resource(Details, "/api/<string:platform>/<string:username>")
 
 
 @app.errorhandler(404)
 def invalid_route(e):
-    return render_template('404.html')
+    return render_template("404.html")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()
